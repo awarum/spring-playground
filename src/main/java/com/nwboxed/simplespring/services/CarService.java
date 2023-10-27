@@ -1,7 +1,9 @@
 package com.nwboxed.simplespring.services;
 
 import com.nwboxed.simplespring.model.Car;
+import com.nwboxed.simplespring.model.ResourceNotFoundException;
 import com.nwboxed.simplespring.repositories.CarRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +33,35 @@ public class CarService {
         carRepository.deleteById(id);
     }
 
+    public Car updateCar(Car car) {
+        return carRepository.save(car);
+    }
+
     public List<Car> getAllCars() {
         List<Car> result = new ArrayList<>();
         carRepository.findAll().forEach(result::add);
         return result;
+    }
+
+    public Car partialUpdate(Car updatedCar) {
+
+        Car existingCar = carRepository
+                .findById(updatedCar.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Could not find car"));
+
+
+        Optional.ofNullable(updatedCar.getType()).ifPresent(existingCar::setType);
+        Optional.ofNullable(updatedCar.getColour()).ifPresent(existingCar::setColour);
+
+//        if (updatedCar.getType() != null) {
+//            existingCar.setType(updatedCar.getType());
+//        }
+//
+//        if (updatedCar.getColour() != null) {
+//            existingCar.setColour(updatedCar.getColour());
+//        }
+
+        return carRepository.save(existingCar);
     }
 
 

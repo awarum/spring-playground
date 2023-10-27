@@ -3,14 +3,17 @@ package com.nwboxed.simplespring.api;
 import com.nwboxed.simplespring.model.Car;
 import com.nwboxed.simplespring.model.ResourceNotFoundException;
 import com.nwboxed.simplespring.services.CarService;
+
+
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
 
 import java.util.List;
 @RestController
@@ -20,15 +23,40 @@ public class CarController extends AbstractController {
     @Autowired
     private CarService carService;
 
+
+
     @RequestMapping(value="",
             method = RequestMethod.POST,
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody Car car, HttpServletRequest request, HttpServletResponse response) {
+            @Operation(summary =" Create a new car and returns the location of the created car in the response header.")
+    public void create(
+            @RequestBody Car car,
+            HttpServletRequest request,
+            HttpServletResponse response) {
         Car createdCar = carService.createCar(car);
-        System.out.println(createdCar);
         response.setHeader(HttpHeaders.LOCATION, request.getRequestURL().append("/").append(createdCar.getId()).toString());
+    }
+
+    @RequestMapping(value="",
+            method = RequestMethod.PUT,
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary =" Create a new car and returns the location of the created car in the response header.")
+    public void update(
+            @RequestBody Car car,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        checkResourceFound(carService.getCar(car.getId()));
+        Car createdCar = carService.updateCar(car);
+        response.setHeader(HttpHeaders.LOCATION, request.getRequestURL().append("/").append(createdCar.getId()).toString());
+    }
+
+    @PatchMapping("")
+    public ResponseEntity<Car> updateCar(@RequestBody Car car) {
+        return ResponseEntity.ok(carService.partialUpdate(car));
     }
 
     @RequestMapping(value = "/{id}",
