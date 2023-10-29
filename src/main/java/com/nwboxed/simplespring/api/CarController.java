@@ -4,7 +4,6 @@ import com.nwboxed.simplespring.model.Car;
 import com.nwboxed.simplespring.model.ResourceNotFoundException;
 import com.nwboxed.simplespring.services.CarService;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,14 +22,11 @@ public class CarController extends AbstractController {
     @Autowired
     private CarService carService;
 
-
-
-    @RequestMapping(value="",
-            method = RequestMethod.POST,
-            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+    @PostMapping(
+            consumes =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-            @Operation(summary =" Create a new car and returns the location of the created car in the response header.")
+    @Operation(summary =" Create a new car and returns the location of the created car in the response header.")
     public void create(
             @RequestBody Car car,
             HttpServletRequest request,
@@ -39,8 +35,7 @@ public class CarController extends AbstractController {
         response.setHeader(HttpHeaders.LOCATION, request.getRequestURL().append("/").append(createdCar.getId()).toString());
     }
 
-    @RequestMapping(value="",
-            method = RequestMethod.PUT,
+    @PutMapping(
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.OK)
@@ -59,8 +54,7 @@ public class CarController extends AbstractController {
         return ResponseEntity.ok(carService.partialUpdate(car));
     }
 
-    @RequestMapping(value = "/{id}",
-            method = RequestMethod.GET,
+    @GetMapping(value = "/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     @ResponseStatus(HttpStatus.OK)
@@ -68,16 +62,14 @@ public class CarController extends AbstractController {
         return checkResourceFound(carService.getCar(id));
     }
 
-    @RequestMapping(value = "",
-            method = RequestMethod.GET,
+    @GetMapping(
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.OK)
     List<Car> list() {
         return carService.getAllCars();
     }
 
-    @RequestMapping(value = "/{id}",
-            method = RequestMethod.DELETE,
+    @DeleteMapping (value = "/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     @ResponseStatus(HttpStatus.NO_CONTENT)

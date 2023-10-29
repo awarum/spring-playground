@@ -48,22 +48,15 @@ public class CarService {
         Car existingCar = carRepository
                 .findById(updatedCar.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Could not find car"));
-
-
-        Optional.ofNullable(updatedCar.getType()).ifPresent(existingCar::setType);
-        Optional.ofNullable(updatedCar.getColour()).ifPresent(existingCar::setColour);
-
-//        if (updatedCar.getType() != null) {
-//            existingCar.setType(updatedCar.getType());
-//        }
-//
-//        if (updatedCar.getColour() != null) {
-//            existingCar.setColour(updatedCar.getColour());
-//        }
-
+        updateProvidedProperties(updatedCar, existingCar);
         return carRepository.save(existingCar);
     }
 
+    private static void updateProvidedProperties(Car updatedCar, Car existingCar) {
+
+        Optional.ofNullable(updatedCar.getType()).ifPresent(existingCar::setType);
+        Optional.ofNullable(updatedCar.getColour()).ifPresent(existingCar::setColour);
+    }
 
 
 }
